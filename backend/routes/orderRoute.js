@@ -1,25 +1,29 @@
 const express = require("express");
-const { is } = require("express/lib/request");
-const { newOrder, getSingleOrder, myOrders, getAllOrders, updateOrder, deleteOrder } = require("../controllers/orderController");
-const { deleteUser } = require("../controllers/userController");
+const {
+  newOrder,
+  getSingleOrder,
+  myOrders,
+  getAllOrders,
+  updateOrder,
+  deleteOrder,
+} = require("../controllers/orderController");
 const router = express.Router();
 
-const { isAuthenticateUser,authorizeRoles } = require("../middleware/auth");
+const { isAuthenticatedUser, authorizeRoles } = require("../middleware/auth");
 
+router.route("/order/new").post(isAuthenticatedUser, newOrder);
 
-router.route("/order/new").post(isAuthenticateUser,newOrder);
+router.route("/order/:id").get(isAuthenticatedUser, getSingleOrder);
 
-router.route("/order/:id").get(isAuthenticateUser,getSingleOrder);
-
-router.route("/orders/me").get(isAuthenticateUser,myOrders);
-
-router
- .route("/admin/orders")
- .get(isAuthenticateUser,authorizeRoles("admin"),getAllOrders);
+router.route("/orders/me").get(isAuthenticatedUser, myOrders);
 
 router
- .route("/admin/order/:id")
- .put(isAuthenticateUser,authorizeRoles("admin"),updateOrder)
- .delete(isAuthenticateUser,authorizeRoles("admin"),deleteOrder);
+  .route("/admin/orders")
+  .get(isAuthenticatedUser, authorizeRoles("admin"), getAllOrders);
+
+router
+  .route("/admin/order/:id")
+  .put(isAuthenticatedUser, authorizeRoles("admin"), updateOrder)
+  .delete(isAuthenticatedUser, authorizeRoles("admin"), deleteOrder);
 
 module.exports = router;
